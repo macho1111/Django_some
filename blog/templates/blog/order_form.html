@@ -1,0 +1,174 @@
+<form method="post" action="{% url 'order_form' %}">
+    {% csrf_token %}
+    <title>請求書</title>
+
+    <h1 style="font-size: 30px; letter-spacing: 4px;">染め直し</h1>
+    <p style="font-size: 26px; letter-spacing: 4px;">注文書・請求書</p>
+    
+    <label for="id_name">名前:</label>
+    <input type="text" id="id_name" name="name" required>
+    <label for="id_address">住所:</label>
+    <input type="text" id="id_address" name="address" required>
+    <label for="id_email">メールアドレス:</label>
+    <input type="text" id="id_email" name="email" required>
+    <label for="id_gender">性別:</label>
+    <select id="id_gender" name="gender" required>
+        <option value="" selected disabled>選択してください</option>
+        <option value="male">男性</option>
+        <option value="female">女性</option>
+    </select>
+    <!-- 他の顧客情報のフィールドも同様に追加 -->
+    <!--<button type="submit">Submit Customer Info</button>-->
+    <div >
+        <table id="orderFields">
+            <tr>
+                <td><label for="id_item_name">服の種類:</label></td>
+                <td>
+                    <select id="id_item_name" name="item_name" required>
+                    <option value="" selected disabled>選択してください</option>
+                    <option value="T-shirt">Ｔシャツ</option>
+                    <option value="Y-shirt">Yシャツ</option>
+                    <option value="Jacket">ジャケット</option>
+                    <option value="Downjacket">ダウンジャケット</option>
+                    <option value="hoodie">パーカー</option>
+                    <option value="onepiece">ワンピース</option>
+                    <option value="Jeans">ジーンズ</option>
+                    <option value="skirt">スカート</option>
+                    <!-- 他のアイテムを追加 -->
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="id_material">素材:</label></td>
+                <td>
+                    <select id="id_material" name="material" required>
+                        <option value="" selected disabled>選択してください</option>
+                        <option value="cotton">コットン</option>
+                        <option value="wool">ウール</option>
+                        <option value="polyester">ポリエステル</option>
+                        <option value="silk">シルク</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="id_size">サイズ:</label></td>
+                <td>
+                    <select id="id_size" name="size" required>
+                        <option value="" selected disabled>選択してください</option>
+                        <option value="small">S</option>
+                        <option value="medium">M</option>
+                        <option value="large">L</option>
+                        <option value="Xlarge">XL</option>
+                        <!-- 他のサイズを追加 -->
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="id_color">色:</label></td>
+                <td><input type="text" id="id_color" name="color" required></td>
+            </tr>
+            <tr>
+                <td><label for="id_item_name">個数:</label></td>
+                <td><input type="quantity" id="id_quantity" name="quantity" value="1" required></td>
+            </tr>
+            <tr>
+                <td><label for="id_price">価格:</label></td>
+                <td><input type="text" id="id_price" name="price" required></td>
+            </tr>
+        </table>
+    </div>
+    <button type="button" onclick="addOrderField()">注文を追加する</button>
+    <button type="submit">注文する</button>
+
+
+    <script>
+        // JavaScriptでプルダウンの選択肢に応じて価格を設定
+        document.getElementById('id_item_name').addEventListener('change', updatePrice);
+        document.getElementById('id_quantity').addEventListener('input', updatePrice);
+    
+        function addOrderField() {
+            
+            var newOrderField = document.getElementById('orderFields').firstElementChild.cloneNode(true);
+
+            
+            var newIndex = Date.now();
+            
+            
+            newOrderField.querySelectorAll('input').forEach(function (input) {
+                input.value = '';
+                
+                input.id = input.id.replace(/\d+/, newIndex);
+                input.name = input.name.replace(/\d+/, newIndex);
+            });
+
+            
+            newOrderField.querySelectorAll('select').forEach(function (select) {
+                select.selectedIndex = 0;
+                
+                select.id = select.id.replace(/\d+/, newIndex);
+                select.name = select.name.replace(/\d+/, newIndex);
+            });
+
+            
+            document.getElementById('orderFields').appendChild(newOrderField);
+            updatePrice();
+        }
+        
+        function updatePrice() {
+            console.log('updatePrice 関数が呼び出されました');
+            var selectedItem = document.getElementById('id_item_name').value;
+            var quantity = parseInt(document.getElementById('id_quantity').value, 10);
+            var priceField = document.getElementById('id_price');
+    
+            // アイテムに応じて価格を設定
+            switch (selectedItem) {
+                case 'T-shirt':
+                    priceField.value = 1000 * quantity;  // アイテム1の価格
+                    break;
+                case 'Y-shirt':
+                    priceField.value = 1500 * quantity;  // アイテム2の価格
+                    break;
+                case 'Jacket':
+                    priceField.value = 2000 * quantity;  // アイテム2の価格
+                    break;
+                case 'Downjacket':
+                    priceField.value = 2500 * quantity;  // アイテム1の価格
+                    break;
+                case 'hoodie':
+                    priceField.value = 3000 * quantity;  // アイテム2の価格
+                    break;
+                case 'onepiece':
+                    priceField.value = 3500 * quantity;  // アイテム2の価格
+                    break;
+                case 'Jeans':
+                    priceField.value = 4000 * quantity;  // アイテム2の価格
+                    break;
+                case 'skirt':
+                    priceField.value = 4500 * quantity;  // アイテム1の価格
+                    break;
+    
+                // 他のアイテムに対する価格設定を追加
+                default:
+                    priceField.value = '';  // アイテムが選択されていない場合は価格をクリア
+            }
+        }
+    </script>
+</form>
+
+<footer style="position: absolute; bottom: 0; width: 100%; text-align: right; padding: 10px;">
+    <div style="padding-right: 100px;">
+        丸幸産業株式会社</span><br/>
+    </div>
+    <div style="padding-right: 100px;">
+        <span style="border-bottom: 1px solid #000;">〒</span><br/>
+    </div>
+    <div style="padding-right: 100px;">
+        <span style="border-bottom: 1px solid #000;">住所</span><br/>
+    </div>
+    <div style="padding-right: 100px;">
+        <span style="border-bottom: 1px solid #000;">電話番号</span><br/>
+    </div>
+    <div style="padding-right: 100px;">
+        Mail:<span style="border-bottom: 1px solid #000;"><a href="mailto:contact@marukousangyou.co.jp">contact@marukousangyou.co.jp</a></span><br/>
+    </div>
+</footer>
